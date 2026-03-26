@@ -8,8 +8,11 @@ mkdir -p obj bin
 echo "Compiling..."
 g++ -c -Wall -Wextra -O2 -std=c++11 -DUNICODE -D_UNICODE -o obj/hlasm_lexer.o src/hlasm_lexer.cpp || exit 1
 
+echo "Resource..."
+windres --output-format=coff src/HLASMLexer.rc -o obj/HLASMLexer.res || exit 1
+
 echo "Linking..."
-g++ -shared -static -o bin/HLASMLexer.dll obj/hlasm_lexer.o exports.def -s -luser32 || exit 1
+g++ -shared -static -o bin/HLASMLexer.dll obj/hlasm_lexer.o obj/HLASMLexer.res exports.def -s -luser32 || exit 1
 
 echo ""
 echo "Done: bin/HLASMLexer.dll"

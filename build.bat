@@ -11,8 +11,12 @@ echo Compiling...
 g++ -c -Wall -Wextra -O2 -std=c++11 -DUNICODE -D_UNICODE -o obj\hlasm_lexer.o src\hlasm_lexer.cpp
 if errorlevel 1 goto :fail
 
+echo Resource...
+windres --output-format=coff src\HLASMLexer.rc -o obj\HLASMLexer.res
+if errorlevel 1 goto :fail
+
 echo Linking...
-g++ -shared -static -o bin\HLASMLexer.dll obj\hlasm_lexer.o exports.def -s -luser32
+g++ -shared -static -o bin\HLASMLexer.dll obj\hlasm_lexer.o obj\HLASMLexer.res exports.def -s -luser32
 if errorlevel 1 goto :fail
 
 echo.
