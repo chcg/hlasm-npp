@@ -1,18 +1,43 @@
 #!/bin/bash
-# Build HLASMLexer.dll — needs MinGW-w64 g++ in PATH
+# Build HLASMLexer.dll. The output is a Windows DLL, so on Linux/macOS
+# you need the MinGW-w64 *cross* toolchain, not the native g++ (native
+# g++ builds Linux .so files, which Notepad++ can't load). We prefer
+# the cross tools when present and fall back to plain g++ on Windows
+# (MSYS2/MinGW shells), where g++ already targets Windows.
 
-command -v g++ >/dev/null || { echo "g++ not found — install MinGW-w64"; exit 1; }
+# Pick the toolchain. x86_64-w64-mingw32-* is the standard cross prefix
+# on Debian/Ubuntu (mingw-w64), Fedora (mingw64-gcc), Arch (mingw-w64-gcc),
+# and Homebrew (mingw-w64).
+if command -v x86_64-w64-mingw32-g++ >/dev/null 2>&1; then
+    CXX=x86_64-w64-mingw32-g++
+    WINDRES=x86_64-w64-mingw32-windres
+elif command -v g++ >/dev/null 2>&1; then
+    CXX=g++
+    WINDRES=windres
+else
+    echo "No compiler found."
+    echo "Linux/macOS: install the MinGW-w64 cross toolchain, e.g."
+    echo "  Debian/Ubuntu : sudo apt install mingw-w64"
+    echo "  Fedora        : sudo dnf install mingw64-gcc-c++"
+    echo "  Arch          : sudo pacman -S mingw-w64-gcc"
+    echo "  macOS (brew)  : brew install mingw-w64"
+    echo "Windows: install MSYS2 + MinGW-w64 and run from the MinGW shell."
+    exit 1
+fi
 
+command -v "$WINDRES" >/dev/null 2>&1 || { echo "$WINDRES not found (part of the MinGW-w64 toolchain)"; exit 1; }
+
+echo "Toolchain: $CXX / $WINDRES"
 mkdir -p obj bin
 
 echo "Compiling..."
-g++ -c -Wall -Wextra -O2 -std=c++11 -DUNICODE -D_UNICODE -o obj/hlasm_lexer.o src/hlasm_lexer.cpp || exit 1
+"$CXX" -c -Wall -Wextra -O2 -std=c++11 -DUNICODE -D_UNICODE -o obj/hlasm_lexer.o src/hlasm_lexer.cpp || exit 1
 
 echo "Resource..."
-windres --output-format=coff src/HLASMLexer.rc -o obj/HLASMLexer.res || exit 1
+"$WINDRES" --output-format=coff src/HLASMLexer.rc -o obj/HLASMLexer.res || exit 1
 
 echo "Linking..."
-g++ -shared -static -o bin/HLASMLexer.dll obj/hlasm_lexer.o obj/HLASMLexer.res exports.def -s -luser32 || exit 1
+"$CXX" -shared -static -o bin/HLASMLexer.dll obj/hlasm_lexer.o obj/HLASMLexer.res exports.def -s -luser32 || exit 1
 
 echo ""
 echo "Done: bin/HLASMLexer.dll"
