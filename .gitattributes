@@ -1,0 +1,21 @@
+# Normalise line endings so scripts work regardless of who commits
+# from which OS. Without this, core.autocrlf=true on a Windows clone
+# can bake CRLF into shell scripts, which breaks them on Linux/macOS
+# (the shebang reads as /bin/bash\r and the interpreter isn't found).
+
+# Default: treat as text, normalise to LF in the repo.
+* text=auto
+
+# Unix-run scripts must stay LF on every platform.
+*.sh   text eol=lf
+*.py   text eol=lf
+
+# Windows-run scripts stay CRLF.
+*.bat  text eol=crlf
+
+# Binaries: never touch.
+*.png  binary
+*.dll  binary
+*.res  binary
+*.o    binary
+*.exe  binary
