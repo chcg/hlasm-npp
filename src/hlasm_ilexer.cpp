@@ -193,6 +193,10 @@ struct FuncItem { TCHAR _itemName[64]; PFUNCPLUGINCMD _pFunc; int _cmdID; bool _
 #define SCI_MULTIEDGEADDLINE     2694
 #define SCI_MULTIEDGECLEARALL    2695
 #define SCI_GETLEXERLANGUAGE     4012
+#define SCI_STYLESETFORE         2051
+#define SCI_STYLESETBACK         2052
+#define SCI_STYLESETBOLD         2053
+#define SCI_STYLESETITALIC       2054
 #define EDGE_MULTI               3
 
 struct SciNotify { NMHDR nmhdr; char _pad[256]; };
@@ -224,6 +228,25 @@ static void ApplyEdges(HWND sci, bool on) {
     }
 }
 
+/* Default colours (BGR), set in code so the lexer works out of the box even
+ * when installed via Plugins Admin with no styling XML present. Colours match
+ * the original plugin; the shipped XML lets users override via Style Configurator. */
+static void SetStyleColours(HWND sci) {
+    SendMessage(sci, SCI_STYLESETFORE,   S_DEFAULT,      0x000000);
+    SendMessage(sci, SCI_STYLESETFORE,   S_LABEL,        0x8B0000);
+    SendMessage(sci, SCI_STYLESETBOLD,   S_LABEL,        1);
+    SendMessage(sci, SCI_STYLESETFORE,   S_OPERATION,    0xFF0000);
+    SendMessage(sci, SCI_STYLESETFORE,   S_OPERAND,      0x000000);
+    SendMessage(sci, SCI_STYLESETFORE,   S_COMMENT,      0x008000);
+    SendMessage(sci, SCI_STYLESETITALIC, S_COMMENT,      1);
+    SendMessage(sci, SCI_STYLESETFORE,   S_STRING,       0x0000CC);
+    SendMessage(sci, SCI_STYLESETFORE,   S_NUMBER,       0x008CFF);
+    SendMessage(sci, SCI_STYLESETFORE,   S_CONTINUATION, 0x808080);
+    SendMessage(sci, SCI_STYLESETBACK,   S_CONTINUATION, 0xCCFFFF);
+    SendMessage(sci, SCI_STYLESETFORE,   S_SEQUENCE,     0xC0C0C0);
+    SendMessage(sci, SCI_STYLESETFORE,   S_REGISTER,     0x800080);
+}
+
 /* NPP rejects a plugin whose getFuncsArray returns null or 0 items, so we
  * expose one harmless command. The lexer itself is used via the Language
  * menu, not this command. */
@@ -252,7 +275,10 @@ void          beNotified(SciNotify *n) {
     unsigned int code = n->nmhdr.code;
     if (code == NPPN_BUFFERACTIVATED || code == NPPN_FILEOPENED) {
         HWND sci = CurrentSci();
-        if (sci) ApplyEdges(sci, CurrentIsHLASM(sci));
+        if (!sci) return;
+        bool hlasm = CurrentIsHLASM(sci);
+        if (hlasm) SetStyleColours(sci);
+        ApplyEdges(sci, hlasm);
     }
 }
 LRESULT       messageProc(UINT, WPARAM, LPARAM) { return TRUE; }

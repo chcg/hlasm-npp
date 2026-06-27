@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Notepad++ styling config for the HLASM Lexilla lexer.
-  Install to:  <Notepad++>\plugins\Config\HLASMLexerL.xml
+  Install to:  <Notepad++>\plugins\Config\HLASMLexer.xml
   styleID values match the S_* enum in hlasm_core.h; name values match
   ILexer5::NameOfStyle. Colours are RGB hex (NPP), converted from the
   Scintilla BGR values in the original plugin.

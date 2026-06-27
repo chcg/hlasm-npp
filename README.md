@@ -2,10 +2,7 @@
 
 **Column-aware** syntax highlighting for IBM High Level Assembler (HLASM) source in Notepad++. Unlike generic assembly highlighters, it understands the 80-column punch-card layout that HLASM lives by.
 
-> **Two versions live in this repo:**
->
-> - **`HLASMLexerL` — the real lexer (recommended).** Registers HLASM as a proper Notepad++ language via the Scintilla/Lexilla `ILexer5` interface. It owns the buffer, so the highlighting just works: it sticks while you type, no manual step, no flicker, and "HLASM" appears in the Language menu like any built-in language.
-> - **`HLASMLexer` — the original plugin (deprecated).** Paints styles over the top via `SendMessage` instead of registering as a language, so it fights Notepad++'s own lexing (the "highlighting comes and goes" problem). **It is deprecated and will be removed.** Use `HLASMLexerL`.
+It registers HLASM as a proper Notepad++ language via the Scintilla/Lexilla `ILexer5` interface. It owns the buffer, so the highlighting just works: it sticks while you type, no manual step, no flicker, and "HLASM" appears in the Language menu like any built-in language. (An earlier version painted styles over the top and fought Notepad++'s own lexing; that approach has been replaced by this lexer.)
 
 ## What It Does
 
@@ -32,7 +29,7 @@ Each field is highlighted by its **column position**, not just by keywords:
 | Sequence     | Light grey      | Columns 73–80                          |
 | Comment      | Green, italic   | Lines starting with `*` or `.*`        |
 
-Vertical **column-boundary rulers** are drawn at the content/continuation boundary, the continuation/sequence boundary, and the end of the card, and (in the new lexer) only on HLASM buffers.
+Vertical **column-boundary rulers** are drawn at the content/continuation boundary, the continuation/sequence boundary, and the end of the card, only on HLASM buffers.
 
 ## Supported Features
 
@@ -44,31 +41,31 @@ Vertical **column-boundary rulers** are drawn at the content/continuation bounda
 - Macro variable references (`&VAR`) and sequence symbols (`.LABEL`)
 - Register detection (R0–R15, case-insensitive)
 
-## Installation (recommended: the lexer)
+## Installation
 
 ### Requirements
 
 - **Notepad++ 8.4 or newer** (the Scintilla 5 / Lexilla versions), 64-bit.
 
-### Steps
+### Via Plugins Admin (once listed)
+
+Search **Plugins → Plugins Admin** for "HLASM", tick it, install. Colours are built in, so it works straight away.
+
+### Manual
 
 1. **Close Notepad++** completely.
-2. Copy the lexer DLL into its own folder (the folder name must match the DLL):
+2. Copy the DLL into its own folder (the folder name must match the DLL):
    ```
-   C:\Program Files\Notepad++\plugins\HLASMLexerL\HLASMLexerL.dll
+   C:\Program Files\Notepad++\plugins\HLASMLexer\HLASMLexer.dll
    ```
-3. Copy the styling config (this maps the styles to colours and associates the file types):
-   ```
-   C:\Program Files\Notepad++\plugins\Config\HLASMLexerL.xml
-   ```
-4. **Restart Notepad++.** "HLASM" now appears in the **Language** menu.
-5. Open an HLASM source file (`.mlc`, `.mac`, `.cpy`). It highlights automatically and stays highlighted, no further action.
+3. **Restart Notepad++.** "HLASM" now appears in the **Language** menu.
+4. Open an HLASM source file (`.mlc`, `.mac`, `.cpy`). It highlights automatically and stays highlighted, no further action.
+
+The colours are set by the lexer itself, so nothing else is required. If you want to **customise** them through **Settings → Style Configurator**, also drop `config\HLASMLexer.xml` into `…\Notepad++\plugins\Config\`.
 
 ### File extensions
 
-`.mlc`, `.mac` and `.cpy` are associated with HLASM out of the box (via the `ext` attribute in `HLASMLexerL.xml`). To add more, edit that attribute and restart.
-
-Want `.asm` too? Add `asm` to the `ext` list in `HLASMLexerL.xml`, and remove `asm` from the built-in Assembly language under **Settings → Style Configurator → Language: Assembly** so the two don't both claim it. (Unlike the old plugin, the lexer registers properly, so this is just an extension-ownership choice, not a fight.)
+`.mlc`, `.mac` and `.cpy` are associated with HLASM out of the box. To add more (including `.asm`), edit the `ext` attribute in `HLASMLexer.xml`. For `.asm`, also remove `asm` from the built-in Assembly language under **Settings → Style Configurator → Language: Assembly** so the two don't both claim it.
 
 ## Why a real lexer
 
@@ -80,16 +77,17 @@ The `ILexer5` version registers HLASM as the buffer's actual lexer, so Notepad++
 
 ### Requirements
 
-- MinGW-w64 (64-bit GCC for Windows).
+- MinGW-w64 (64-bit GCC for Windows), with `windres` for the version resource.
 
-### Build the lexer
+### Build
 
 ```bat
 g++ -c -Wall -Wextra -O2 -std=c++11 -DUNICODE -D_UNICODE -Isrc -o obj\hlasm_ilexer.o src\hlasm_ilexer.cpp
-g++ -shared -static -o bin\HLASMLexerL.dll obj\hlasm_ilexer.o exports_lexer.def -s -luser32
+windres --output-format=coff src\HLASMLexer.rc -o obj\HLASMLexer.res
+g++ -shared -static -o bin\HLASMLexer.dll obj\hlasm_ilexer.o obj\HLASMLexer.res exports.def -s -luser32
 ```
 
-Or just run `build_lexer.bat`. (`build.bat` still builds the deprecated `HLASMLexer` plugin for now.)
+Or just run `build.bat`.
 
 ## Architecture
 
