@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Notepad++ styling config for the HLASM Lexilla lexer.
+  Install to:  <Notepad++>\plugins\Config\HLASMLexerL.xml
+  styleID values match the S_* enum in hlasm_core.h; name values match
+  ILexer5::NameOfStyle. Colours are RGB hex (NPP), converted from the
+  Scintilla BGR values in the original plugin.
+-->
+<NotepadPlus>
+    <LexerStyles>
+        <LexerType name="HLASM" desc="HLASM" ext="mlc mac cpy">
+            <WordsStyle name="default"      styleID="0" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="label"        styleID="1" fgColor="00008B" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="operation"    styleID="2" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="operand"      styleID="3" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="comment"      styleID="4" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" />
+            <WordsStyle name="string"       styleID="5" fgColor="CC0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="number"       styleID="6" fgColor="FF8C00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="continuation" styleID="7" fgColor="808080" bgColor="FFFFCC" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="sequence"     styleID="8" fgColor="C0C0C0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="register"     styleID="9" fgColor="800080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+        </LexerType>
+    </LexerStyles>
+</NotepadPlus>

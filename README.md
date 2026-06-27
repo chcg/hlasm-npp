@@ -79,6 +79,14 @@ The plugin applies automatically to **all files** when a buffer is opened. For b
 
 If auto-apply doesn't trigger for a particular file, use **Plugins → HLASM Lexer → Apply HLASM Highlighting** from the menu.
 
+### If the highlighting comes and goes
+
+This plugin paints colours directly onto the editor rather than registering as a Notepad++ language. So if the current document *also* has a language assigned (a built-in lexer, or a User Defined Language), Notepad++ re-lexes the buffer and repaints over this plugin's styling, which shows up as the highlighting flickering on and off "at whim".
+
+The fix: set **Language → None (Normal Text)** for the document, then **Plugins → HLASM Lexer → Apply HLASM Highlighting**. With no competing lexer, the styling sticks.
+
+Using the recommended extensions (`.mlc`, `.mac`, `.cpy`) avoids this, because Notepad++ has no built-in language for them and leaves the buffer on Normal Text.
+
 ## Building from Source
 
 ### Requirements

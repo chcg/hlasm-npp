@@ -1,0 +1,15 @@
+LIBRARY HLASMLexerL
+EXPORTS
+    CreateLexer
+    GetLexerCount
+    GetLexerName
+    GetLexerFactory
+    GetNameSpace
+    GetLibraryPropertyNames
+    SetLibraryProperty
+    isUnicode
+    setInfo
+    getName
+    getFuncsArray
+    beNotified
+    messageProc
